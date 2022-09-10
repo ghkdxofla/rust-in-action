@@ -19,4 +19,10 @@ What do we seek through millions of pages?";
         }
         line_num += 1;
     }
+
+    for (i, line) in quote.lines().enumerate() {
+        if line.contains(search_term) {
+            println!("Found '{}' in: {}", line, i + 1);
+        }
+    }
 }
