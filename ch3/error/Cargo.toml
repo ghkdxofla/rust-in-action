@@ -1,5 +1,5 @@
 [package]
-name = "not_quite_file"
+name = "error"
 version = "0.1.0"
 edition = "2021"
 
