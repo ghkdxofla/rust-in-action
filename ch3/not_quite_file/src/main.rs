@@ -1,3 +1,5 @@
+//! 한 번에 한 단계 씩 파일을 시뮬레이트 한다.
+
 // use rand::prelude::*; // 공통 트레이트와 타입을 가져온다.
 #![allow(dead_code)]
 
@@ -27,6 +29,8 @@ impl Display for FileState {
     }
 }
 
+/// 아마도 파일 시스템에 있을
+/// '파일'을 나타낸다.
 #[derive(Debug)]
 pub struct File {
     pub name: String,
@@ -35,6 +39,7 @@ pub struct File {
 }
 
 impl File {
+    /// 새 파일은 비어 있다고 가정하나, 이름은 필요하다.
     pub fn new(name: &str) -> File { // 메서드는 구조체가 pub라 하더라도 공개 여부를 명시적으로 지정해야 한다.
         File {
             name: String::from(name),
@@ -50,7 +55,16 @@ impl File {
         f
     }
 
-    
+    /// 파일 길이를 바이트로 반환한다.
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    /// 파일 이름을 반환한다.
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
     fn read(
         self: &File,
         save_to: &mut Vec<u8>,
@@ -94,14 +108,13 @@ fn main() {
     }
 
     f2 = open(f2).unwrap();
-    let f2_length = f2.read(&mut buffer).unwrap();
+    let f2_length = f2.len();
     f2 = close(f2).unwrap();
 
     let text = String::from_utf8_lossy(&buffer);
 
     println!("{:?}", f2);
     println!("{}", f2);
-    println!("{} is {} bytes long", f2.name, f2_length);
+    println!("{} is {} bytes long", f2.name(), f2_length);
     println!("{}", text);
-
 }
