@@ -1,13 +1,30 @@
-use rand::prelude::*; // 공통 트레이트와 타입을 가져온다.
+// use rand::prelude::*; // 공통 트레이트와 타입을 가져온다.
+#![allow(dead_code)]
 
-fn one_in(denominator: u32) -> bool {
-    thread_rng().gen_ratio(1, denominator) // 쓰레드 로컬 난수 생성기를 사용하여 1/denominator의 확률로 true를 반환
-}
+use std::fmt;
+use std::fmt::{Display};
 
-#[derive(Debug)]
+// fn one_in(denominator: u32) -> bool {
+//     thread_rng().gen_ratio(1, denominator) // 쓰레드 로컬 난수 생성기를 사용하여 1/denominator의 확률로 true를 반환
+// }
+
+#[derive(Debug, PartialEq)]
 enum FileState {
     Open,
     Closed,
+}
+
+// impl Trait for Type 형태로 구현한다.
+impl Display for FileState {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        match *self {
+            FileState::Open => write!(f, "OPEN"),
+            FileState::Closed => write!(f, "CLOSED"),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -34,17 +51,26 @@ impl File {
     }
 
     
-fn read(
-    self: &File,
-    save_to: &mut Vec<u8>,
-) -> Result<usize, String> {
-    let mut tmp = self.data.clone();
-    let read_length = tmp.len();
+    fn read(
+        self: &File,
+        save_to: &mut Vec<u8>,
+    ) -> Result<usize, String> {
+        let mut tmp = self.data.clone();
+        let read_length = tmp.len();
 
-    save_to.reserve(read_length); // save_to 벡터에 읽은 데이터를 저장하기 위해 공간을 확보
-    save_to.append(&mut tmp); // save_to 벡터에 읽은 데이터를 추가
-    Ok(read_length)
+        save_to.reserve(read_length); // save_to 벡터에 읽은 데이터를 저장하기 위해 공간을 확보
+        save_to.append(&mut tmp); // save_to 벡터에 읽은 데이터를 추가
+        Ok(read_length)
+    }
 }
+
+impl Display for File {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "<{} ({})>", self.name, self.state)
+    }
 }
 
 fn open(mut f: File) -> Result<File, String> {
@@ -74,6 +100,7 @@ fn main() {
     let text = String::from_utf8_lossy(&buffer);
 
     println!("{:?}", f2);
+    println!("{}", f2);
     println!("{} is {} bytes long", f2.name, f2_length);
     println!("{}", text);
 
