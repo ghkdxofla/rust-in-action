@@ -9,7 +9,7 @@ use std::fmt::{Display};
 // }
 
 #[derive(Debug, PartialEq)]
-enum FileState {
+pub enum FileState {
     Open,
     Closed,
 }
@@ -28,14 +28,14 @@ impl Display for FileState {
 }
 
 #[derive(Debug)]
-struct File {
-    name: String,
-    data: Vec<u8>,
-    state: FileState,
+pub struct File {
+    pub name: String,
+    data: Vec<u8>, // data는 여전히 이 크레이트를 임포트 해도 비공개로 남는다.
+    pub state: FileState,
 }
 
 impl File {
-    fn new(name: &str) -> File {
+    pub fn new(name: &str) -> File { // 메서드는 구조체가 pub라 하더라도 공개 여부를 명시적으로 지정해야 한다.
         File {
             name: String::from(name),
             data: Vec::new(),
