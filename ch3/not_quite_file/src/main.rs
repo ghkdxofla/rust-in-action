@@ -1,4 +1,8 @@
-#![allow(unused_variables)]
+use rand::prelude::*; // 공통 트레이트와 타입을 가져온다.
+
+fn one_in(denominator: u32) -> bool {
+    thread_rng().gen_ratio(1, denominator) // 쓰레드 로컬 난수 생성기를 사용하여 1/denominator의 확률로 true를 반환
+}
 
 #[derive(Debug)]
 struct File {
@@ -24,41 +28,40 @@ impl File {
 fn read(
     self: &File,
     save_to: &mut Vec<u8>,
-) -> usize {
+) -> Result<usize, String> {
     let mut tmp = self.data.clone();
     let read_length = tmp.len();
 
     save_to.reserve(read_length); // save_to 벡터에 읽은 데이터를 저장하기 위해 공간을 확보
     save_to.append(&mut tmp); // save_to 벡터에 읽은 데이터를 추가
-    read_length
+    Ok(read_length)
 }
 }
 
-fn open(f: &mut File) -> bool {
-    true
+fn open(f: File) -> Result<File, String> {
+    if one_in(10_000) {
+        let err_msg = String::from("Permission denied");
+        return Err(err_msg);
+    }
+    Ok(f)
 }
 
-fn close(f: &mut File) -> bool {
-    true
+fn close(f: File) -> Result<File, String> {
+    if one_in(100_000) {
+        let err_msg = String::from("Interrupted by signal");
+        return Err(err_msg);
+    }
+    Ok(f)
 }
 
 fn main() {
-    // let mut f2 = File {
-    //     name: String::from("f2.txt"),
-    //     data: vec![114, 117, 115, 116, 33],
-    // };
-    let f1 = File::new("f1.txt");
-    let mut buffer_f1 = vec![];
-    let f1_length = f1.read(&mut buffer_f1);
-    println!("{:?}", f1);
-    println!("{} is {} bytes long", f1.name, f1_length);
-    
     let f2_data: Vec<u8> = vec![114, 117, 115, 116, 33];
     let mut f2 = File::new_with_data("f2.txt", &f2_data);
 
     let mut buffer = vec![];
-    let f2_length = f2.read(&mut buffer);
-    close(&mut f2);
+    f2 = open(f2).unwrap();
+    let f2_length = f2.read(&mut buffer).unwrap();
+    f2 = close(f2).unwrap();
 
     let text = String::from_utf8_lossy(&buffer);
 
