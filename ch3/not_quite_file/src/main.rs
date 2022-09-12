@@ -39,7 +39,13 @@ pub struct File {
 }
 
 impl File {
-    /// 새 파일은 비어 있다고 가정하나, 이름은 필요하다.
+    /// 빈 `File`을 새로 만든다.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// let f = File::new("foo.txt");
+    /// ```
     pub fn new(name: &str) -> File { // 메서드는 구조체가 pub라 하더라도 공개 여부를 명시적으로 지정해야 한다.
         File {
             name: String::from(name),
