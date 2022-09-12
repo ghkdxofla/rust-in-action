@@ -5,9 +5,16 @@ fn one_in(denominator: u32) -> bool {
 }
 
 #[derive(Debug)]
+enum FileState {
+    Open,
+    Closed,
+}
+
+#[derive(Debug)]
 struct File {
     name: String,
     data: Vec<u8>,
+    state: FileState,
 }
 
 impl File {
@@ -15,12 +22,14 @@ impl File {
         File {
             name: String::from(name),
             data: Vec::new(),
+            state: FileState::Closed,
         }
     }
 
     fn new_with_data(name: &str, data: &Vec<u8>) -> File {
         let mut f = File::new(name);
         f.data = data.clone();
+        f.state = FileState::Closed;
         f
     }
 
@@ -38,19 +47,13 @@ fn read(
 }
 }
 
-fn open(f: File) -> Result<File, String> {
-    if one_in(10_000) {
-        let err_msg = String::from("Permission denied");
-        return Err(err_msg);
-    }
+fn open(mut f: File) -> Result<File, String> {
+    f.state = FileState::Open;
     Ok(f)
 }
 
-fn close(f: File) -> Result<File, String> {
-    if one_in(100_000) {
-        let err_msg = String::from("Interrupted by signal");
-        return Err(err_msg);
-    }
+fn close(mut f: File) -> Result<File, String> {
+    f.state = FileState::Closed;
     Ok(f)
 }
 
@@ -59,6 +62,11 @@ fn main() {
     let mut f2 = File::new_with_data("f2.txt", &f2_data);
 
     let mut buffer = vec![];
+
+    if f2.read(&mut buffer).is_err() {
+        println!("Error checking is working");
+    }
+
     f2 = open(f2).unwrap();
     let f2_length = f2.read(&mut buffer).unwrap();
     f2 = close(f2).unwrap();
