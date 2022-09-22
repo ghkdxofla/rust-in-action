@@ -3,6 +3,7 @@
 #[derive(Debug)]
 struct CubeSat {
     id: u64,
+    mailbox: Mailbox,
 }
 
 #[derive(Debug)]
@@ -10,28 +11,64 @@ enum StatusMessage {
     Ok,
 }
 
+#[derive(Debug)]
+struct Mailbox {
+    messages: Vec<Message>,
+}
+
+type Message = String;
+
+struct GroundStation;
+
+impl GroundStation {
+    fn connect(&self, sat_id: u64) -> CubeSat {
+        CubeSat {
+            id: sat_id,
+            mailbox: Mailbox {
+                messages: vec![],
+            },
+        }
+    }
+    
+    fn send(
+        &self,
+        to: &mut CubeSat,
+        msg: Message
+    ) {
+        to.mailbox.messages.push(msg);
+    }
+}
+
+impl CubeSat {
+    fn recv(&mut self) -> Option<Message> {
+        self.mailbox.messages.pop()
+    }
+}
+
 fn check_status(sat_id: CubeSat) -> CubeSat {
     println!("{:?}: {:?}", sat_id, StatusMessage::Ok);
     sat_id
 }
 
+fn fetch_sat_ids() -> Vec<u64> {
+    vec![1, 2, 3]
+}
+
 fn main() {
-    let sat_a = CubeSat { id: 0 };
-    /**
-     * 이전 커밋에서는 가능했던 이유: 
-     * Rust는 Primitive type은 복사를 구현함(Copy semantics)
-     * 아래의 타입은 이동을 한다(Move semantics)
-     */
+    let base = GroundStation {};
+    let mut sat_a = CubeSat {
+        id: 0,
+        mailbox: Mailbox { messages: vec![] },
+    };
 
-    let sat_b = CubeSat { id: 1 };
-    let sat_c = CubeSat { id: 2 };
+    println!("t0: {:?}", sat_a);
 
-    let sat_a = check_status(sat_a);
-    let sat_b = check_status(sat_b);
-    let sat_c = check_status(sat_c);
+    base.send(&mut sat_a, Message::from("Hello there!"));
 
-    // '대기 중' ...
-    let sat_a = check_status(sat_a);
-    let sat_b = check_status(sat_b);
-    let sat_c = check_status(sat_c);
+    println!("t1: {:?}", sat_a);
+
+    let msg = sat_a.recv();
+    println!("t2: {:?}", sat_a);
+
+    println!("Message: {:?}", msg);
 }
