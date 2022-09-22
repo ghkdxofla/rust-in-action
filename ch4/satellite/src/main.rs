@@ -1,3 +1,5 @@
+
+
 #![allow(unused_variables)]
 
 #[derive(Debug, Clone, Copy)]
@@ -98,4 +100,11 @@ fn main() {
         let msg = sat.recv(&mut mail);
         println!("{:?}: {:?}", sat, msg);
     }
+
+    let sat_a = CubeSat{id: 1};
+    let a_status = check_status(sat_a.clone());
+    println!("a: {:?}", a_status.clone());
+
+    let a_status = check_status(sat_a);
+    println!("a: {:?}", a_status);
 }
